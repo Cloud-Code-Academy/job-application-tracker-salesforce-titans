@@ -114,11 +114,11 @@
     </relatedLists>
     <relatedLists>
         <fields>NAME</fields>
+        <fields>isPrimary__c</fields>
         <fields>Contact.CNTC_FIRST_NAME</fields>
         <fields>Contact.NAME</fields>
         <fields>Contact.CNTC_PHONE3</fields>
         <fields>Contact.CNTC_EMAIL</fields>
-        <fields>isPrimary__c</fields>
         <fields>Title__c</fields>
         <relatedList>JobApplicationContacts__c.Job_Application__c</relatedList>
     </relatedLists>
