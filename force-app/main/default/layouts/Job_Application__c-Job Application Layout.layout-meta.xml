@@ -43,10 +43,6 @@
             </layoutItems>
             <layoutItems>
                 <behavior>Edit</behavior>
-                <field>Contact__c</field>
-            </layoutItems>
-            <layoutItems>
-                <behavior>Edit</behavior>
                 <field>URL__c</field>
             </layoutItems>
             <layoutItems>
@@ -135,6 +131,16 @@
             <sortOrder>6</sortOrder>
         </platformActionListItems>
     </platformActionList>
+    <relatedLists>
+        <fields>Contact.CNTC_FIRST_NAME</fields>
+        <fields>Contact.NAME</fields>
+        <fields>Contact.CNTC_PHONE1</fields>
+        <fields>Contact.CNTC_TITLE</fields>
+        <fields>Contact.CNTC_EMAIL</fields>
+        <fields>Title__c</fields>
+        <fields>isPrimary__c</fields>
+        <relatedList>JobApplicationContacts__c.Job_Application__c</relatedList>
+    </relatedLists>
     <relatedLists>
         <fields>TASK.SUBJECT</fields>
         <fields>TASK.WHO_NAME</fields>
