@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<StandardValueSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <sorted>false</sorted>
+    <standardValue>
+        <fullName>Check job alignment</fullName>
+        <default>false</default>
+        <label>Check if the job description aligns with your interests and values</label>
+    </standardValue>
+    <standardValue>
+        <fullName>Review highlighted skills</fullName>
+        <default>false</default>
+        <label>Review the highlighted skills to see if the role is a good fit</label>
+    </standardValue>
+    <standardValue>
+        <fullName>Mark excitement</fullName>
+        <default>false</default>
+        <label>Research the company or role and mark your excitement</label>
+    </standardValue>
+    <standardValue>
+        <fullName>Find a contact</fullName>
+        <default>false</default>
+        <label>Find and research someone who works at the company and add them as a contact</label>
+    </standardValue>
+    <standardValue>
+        <fullName>Set up interview</fullName>
+        <default>false</default>
+        <label>Set up an informational interview to learn more about the role/company</label>
+    </standardValue>
+    <standardValue>
+        <fullName>Identify potential referrals</fullName>
+        <default>false</default>
+        <label>Identify potential referrals to help get your application on the top of the pile</label>
+    </standardValue>
+    <standardValue>
+        <fullName>Customize achievements</fullName>
+        <default>false</default>
+        <label>Customize your work achievements using the job description keywords</label>
+    </standardValue>
+    <standardValue>
+        <fullName>Submit your application</fullName>
+        <default>false</default>
+        <label>Submit your application on the company website if possible</label>
+    </standardValue>
+    <standardValue>
+        <fullName>Contact hiring manager</fullName>
+        <default>false</default>
+        <label>Reach out to the hiring manager or recruiter</label>
+    </standardValue>
+    <standardValue>
+        <fullName>Follow up your application</fullName>
+        <default>false</default>
+        <label>Follow up on your application via email weekly</label>
+    </standardValue>
+    <standardValue>
+        <fullName>Identify other job opportunities</fullName>
+        <default>false</default>
+        <label>Continue identifying and saving similar job opportunities</label>
+    </standardValue>
+    <standardValue>
+        <fullName>Schedule a networking call</fullName>
+        <default>false</default>
+        <label>Set up weekly networking calls to explore similar companies/roles</label>
+    </standardValue>
+    <standardValue>
+        <fullName>Prepare your blurb</fullName>
+        <default>false</default>
+        <label>Prepare your blurb or “tell me about yourself” response</label>
+    </standardValue>
+    <standardValue>
+        <fullName>Practice interview questions</fullName>
+        <default>false</default>
+        <label>Practice answering behavioral interview questions</label>
+    </standardValue>
+    <standardValue>
+        <fullName>Research the company</fullName>
+        <default>false</default>
+        <label>Research the company and your interviewers</label>
+    </standardValue>
+    <standardValue>
+        <fullName>Set up for the interview</fullName>
+        <default>false</default>
+        <label>Set up your virtual interview space and test your tech</label>
+    </standardValue>
+    <standardValue>
+        <fullName>Send thank you</fullName>
+        <default>false</default>
+        <label>Send thank you emails within 24 hours</label>
+    </standardValue>
+    <standardValue>
+        <fullName>Research your market value</fullName>
+        <default>false</default>
+        <label>Research your market value and know your numbers</label>
+    </standardValue>
+    <standardValue>
+        <fullName>Prepare negotiation scripts</fullName>
+        <default>false</default>
+        <label>Prepare your negotiation scripts</label>
+    </standardValue>
+    <standardValue>
+        <fullName>Evaluate job offer</fullName>
+        <default>false</default>
+        <label>Evaluate your offer and decline or accept</label>
+    </standardValue>
+    <standardValue>
+        <fullName>Plan resignation</fullName>
+        <default>false</default>
+        <label>Plan your resignation if applicable</label>
+    </standardValue>
+    <standardValue>
+        <fullName>Relax and recharge</fullName>
+        <default>false</default>
+        <label>Take some time to relax and recharge</label>
+    </standardValue>
+    <standardValue>
+        <fullName>Prepare to onboard</fullName>
+        <default>false</default>
+        <label>Prepare for your first day of onboarding</label>
+    </standardValue>
+    <standardValue>
+        <fullName>Request feedback</fullName>
+        <default>false</default>
+        <label>Send a follow-up email thanking the interviewer and asking for feedback</label>
+    </standardValue>
+    <standardValue>
+        <fullName>Review and reflect</fullName>
+        <default>false</default>
+        <label>Review your notes and reflect on areas of improvement</label>
+    </standardValue>
+</StandardValueSet>
