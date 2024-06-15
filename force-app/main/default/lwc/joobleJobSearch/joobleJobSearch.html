@@ -1,0 +1,29 @@
+<template>
+
+    <lightning-card title="Search for Jobs">
+        <div class="slds-m-around_medium">
+            <lightning-input label="Keywords" onchange={handleKeyChange}></lightning-input>
+            <lightning-input label="Location" onchange={handleLocChange}></lightning-input>
+            <br/>
+            <lightning-button label="Search for Jobs" onclick={handleSearch}></lightning-button>
+            <br/>
+            <template lwc:if={data.length}>
+                <div  class="slds-m-top_medium">
+                    <lightning-datatable 
+                        key-field="id"
+                        data={data} 
+                        columns={columns} 
+                        onrowselection={getSelectedRows}>
+                    </lightning-datatable>
+                </div>
+                <div class="slds-m-top_medium">
+                    <lightning-button label="Save to Salesforce" onclick={handleSave}></lightning-button>
+                </div>
+            </template>
+            <template lwc:elseif={noResults}>
+                <p>No results found. Please try a new search.</p>
+            </template>
+        </div>
+    </lightning-card>
+
+</template>
