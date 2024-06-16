@@ -1,4 +1,8 @@
 public with sharing class InterviewEmailReminder implements Database.Batchable<sObject>, Database.Stateful {
+
+
+  @TestVisible static Integer emailLimits;
+
   public InterviewEmailReminder() {
   }
 
@@ -38,6 +42,9 @@ public with sharing class InterviewEmailReminder implements Database.Batchable<s
         System.debug('****EMAIL SENDING' + allEmails);
 
         Messaging.sendEmail(allEmails);
+
+        InterviewEmailReminder.emailLimits = Limits.getEmailInvocations();
+        System.debug('**** POST SEND EMAIL '+ Limits.getEmailInvocations());
       }
     } catch (Exception e) {
       System.debug('EXCEPTION HIT:' + e.getMessage());

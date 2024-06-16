@@ -60,12 +60,14 @@ public with sharing class InterviewEmailReminderTest {
     InterviewEmailReminder testInterviewEmailReminder = new InterviewEmailReminder();
     // start the batch Job
     Id batchId = Database.executeBatch(testInterviewEmailReminder);
+    System.debug('**** EMAIL INVOCATIONS: '+ Limits.getEmailInvocations());
     test.stopTest();
 
     //Assertions
 
     // Assert the number of emails sent
-    Integer emailCount = Limits.getEmailInvocations();
+    Integer emailCount = InterviewEmailReminder.emailLimits;
+    System.debug('**** EMAIL INVOCATIONS: '+ emailCount);
 
     // // Assert the number of emails sent matches the number of interviews tomorrow
 
