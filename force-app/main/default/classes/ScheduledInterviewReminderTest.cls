@@ -1,3 +1,13 @@
+/**
+ * Apex Class: ScheduledInterviewReminderTest
+ * Description: Test class for ScheduledInterviewReminder which validates the scheduling
+and behavior of a scheduled job that sends daily interview email reminders.
+The test ensures that the job is scheduled correctly to run every Sunday at 9:00 AM,
+verifies the Cron expression, and checks that the job has not yet executed.
+Additionally, it confirms that the next scheduled execution time aligns with the
+expected behavior of triggering at 9:00 AM on the upcoming Sunday.
+ * Last Modified: 2024-06-16
+ */
 @isTest
 public class ScheduledInterviewReminderTest {
   public static String CRON_EXP = '0 0 9 ? * SUN *';

@@ -1,8 +1,9 @@
-/* Created Date - 10/06/2024
-Last Modified Date - 13/06/2024
- Author - Smita 
- Description - This has test methods to test InterviewEmailReminder batch class that sends email reminders to email address of job applicant */
-
+/**
+ * Apex Class: InterviewEmailReminderTest
+ * Description: This has test methods to test InterviewEmailReminder batch class that sends email reminders to email address of job applicant
+ * Created Date: 2024-06-14
+ * Last Modified: 2024-06-16
+ */
 @isTest
 public with sharing class InterviewEmailReminderTest {
   @TestSetup
@@ -53,6 +54,7 @@ public with sharing class InterviewEmailReminderTest {
     insert interview1;
   }
 
+  
   @isTest
   static void testInterviewEmailReminderBatchClassPositive() {
     test.startTest();
@@ -60,14 +62,14 @@ public with sharing class InterviewEmailReminderTest {
     InterviewEmailReminder testInterviewEmailReminder = new InterviewEmailReminder();
     // start the batch Job
     Id batchId = Database.executeBatch(testInterviewEmailReminder);
-    System.debug('**** EMAIL INVOCATIONS: '+ Limits.getEmailInvocations());
+    System.debug('**** EMAIL INVOCATIONS: ' + Limits.getEmailInvocations());
     test.stopTest();
 
     //Assertions
 
-    // Assert the number of emails sent
+    // Assert the number of emails sent of the static test varible set in InterviewReminder class after sending email.
     Integer emailCount = InterviewEmailReminder.emailLimits;
-    System.debug('**** EMAIL INVOCATIONS: '+ emailCount);
+    System.debug('**** EMAIL INVOCATIONS: ' + emailCount);
 
     // // Assert the number of emails sent matches the number of interviews tomorrow
 

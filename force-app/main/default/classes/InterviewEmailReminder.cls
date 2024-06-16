@@ -1,18 +1,24 @@
+/**
+ * Apex Class: InterviewEmailReminder
+ * Description: This batch class triggers email reminders for interview events happening tomorrow.
+ * This batch class is scheduled to run daily more details on ScheduleDailyInterviewEmailReminder and look in Scheduled jobs in setup.
+ * Created Date: 2024-06-14
+ * Last Modified: 2024-06-16
+ */
 public with sharing class InterviewEmailReminder implements Database.Batchable<sObject>, Database.Stateful {
-
-
-  @TestVisible static Integer emailLimits;
+  @TestVisible
+  static Integer emailLimits;
 
   public InterviewEmailReminder() {
   }
-
+  // Start method
   public Database.QueryLocator start(Database.BatchableContext BC) {
     System.debug('**** INSIDE START');
     return Database.getQueryLocator(
       'SELECT Id, Subject, Owner.Email, StartDateTime, Interviewer__r.Account.Name,EndDateTime, Interviewer__r.Name FROM Event WHERE RecordType.Name = \'Interview\' AND StartDateTime = NEXT_N_DAYS:1'
     );
   }
-
+  //Execute Method
   public void execute(Database.BatchableContext BC, List<Event> interviews) {
     System.debug('****INSIDE EXECUTE');
 
@@ -43,64 +49,17 @@ public with sharing class InterviewEmailReminder implements Database.Batchable<s
 
         Messaging.sendEmail(allEmails);
 
+        // This is used in line 70 of test class to assert
         InterviewEmailReminder.emailLimits = Limits.getEmailInvocations();
-        System.debug('**** POST SEND EMAIL '+ Limits.getEmailInvocations());
+
+        System.debug('**** POST SEND EMAIL ' + Limits.getEmailInvocations());
       }
     } catch (Exception e) {
       System.debug('EXCEPTION HIT:' + e.getMessage());
     }
   }
 
+  //finish
   public void finish(Database.BatchableContext BC) {
   }
-
-  // private Id getEmailTemplateId() {
-  //      return Id interviewReminderEmailTemplateId = [SELECT Id,
-  //  FROM EmailTemplate
-  // where DeveloperName='Blank' LIMIT 1];
-
-  // }
 }
-
-/*
-public class ComplexAccountBatch implements Database.Batchable<sObject>, Database.Stateful {
-
-    // We're keeping track of failed batches.
-    private List<String> failedBatches = new List<String>();
-
-    // The start method is the same as in the simple example.
-    public Database.QueryLocator start(Database.BatchableContext BC) {
-        return Database.getQueryLocator('SELECT Id, Description FROM Account');
-    }
-
-    // The execute method is also similar, but now we're also catching any exceptions.
-    public void execute(Database.BatchableContext BC, List<Account> records) {
-        try {
-            for(Account a : records) {
-                a.Description = 'Processed by complex batch job.';
-            }
-            update records;
-        } catch (Exception e) {
-            handleBatchError(BC, e);
-        }
-    }
-
-    // The finish method now sends an email if there were any failed batches.
-    public void finish(Database.BatchableContext BC) {
-        if (!failedBatches.isEmpty()) {
-            // Email the Salesforce admin.
-            Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
-            mail.setToAddresses(new List<String>{'admin@example.com'});
-            mail.setSubject('Batch Apex Job Failed Batches');
-            mail.setPlainTextBody('The following batches failed:\n' + String.join(failedBatches, '\n'));
-            Messaging.sendEmail(new List<Messaging.SingleEmailMessage>{mail});
-        }
-    }
-
-    // This is the error handler method.
-    public void handleBatchError(Database.BatchableContext BC, Exception e) {
-        failedBatches.add('Batch ID: ' + BC.getJobId() + '. Error: ' + e.getMessage());
-    }
-}
-*/
-
