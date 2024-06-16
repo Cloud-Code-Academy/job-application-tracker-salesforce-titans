@@ -1,16 +1,20 @@
+/**
+ * Apex Class: JoobleSaveToSalesforce
+ * Description: This class creates the appropriate Account and Job Application records based on the JSON data payload
+ * returned from the joobleJobSearch lwc. 
+ * Created Date: 2024-06-13
+ * Last Modified: 2024-06-15
+ */
 
 public with sharing class JoobleSaveToSalesforce {
 
+    // Process JSON payload of job records and save to Salesforce
     @AuraEnabled(cacheable=false)
     public static void saveToSalesforce(String payload) {
 
         try {
 
-            System.debug('*** INSIDE SAVE TO SALESFORCE');
-            System.debug('*** Retrieved rows: ' + payload);
-
             List<Object> jobRecords = (List<Object>) JSON.deserializeUntyped(payload);
-            System.debug('*** jobMAP' + jobRecords);
 
             // Parse JSON Data to create a map of Job Applications and Company Names
             Map<String, Job_Application__c> mapJoobleIdToJobApplication = new Map<String, Job_Application__c>();
@@ -30,56 +34,16 @@ public with sharing class JoobleSaveToSalesforce {
                 job.Salary__c = String.isEmpty(salaryString) ? 0 : Decimal.valueOf(salaryString);
                 job.Description__c = (String) dataObject.get('snippet');
                 job.URL__c = (String) dataObject.get('link');
-                job.Notes__c = (String) dataObject.get('source');
+                String source = 'Source: ' + (String) dataObject.get('source');
+                job.Notes__c = source;
                 job.Status__c = 'Saved';
     
                 mapJoobleIdToJobApplication.put(joobleIdString, job);
                 mapJoobleIdToCompanyName.put(joobleIdString, companyName);
             }
 
-
-            System.debug('*** mapJoobleIdToJobApplication: '+ mapJoobleIdToJobApplication);
-            System.debug('*** mapJoobleIdToCompanyName: '+ mapJoobleIdToCompanyName);
-
-            // Process Company Names and insert to Salesforce if needed
-            Set<String> companyNames = new Set<String>(mapJoobleIdToCompanyName.values());  
-
-            System.debug('*** companyNames: '+ companyNames);
-             
-            // Get existing accounts in Salesforce that match company names
-            List<Account> existingAccounts = [ 
-                SELECT Id, Name
-                FROM Account
-                WHERE Name IN :companyNames
-            ];
-
-            System.debug('*** existingAccounts: '+ existingAccounts);
-
-            // Create Map of Account Name : Account
-            Map<String, Account> mapAccountNameToAccount = new Map<String, Account>();
-
-            for(Account a : existingAccounts) {
-                mapAccountNameToAccount.put(a.Name, a);
-            }
-
-            // Create Account record for Accounts that do not already exist in Salesforce
-            List<Account> accountsToInsert = new List<Account>(); 
-
-            for (String companyName : companyNames){
-                if (!mapAccountNameToAccount.containsKey(companyName)) {
-                    Account newAccount = new Account(Name = companyName);
-                    accountsToInsert.add(newAccount);
-                    mapAccountNameToAccount.put(companyName, newAccount);
-                }
-            }
-            // Insert Account records
-            if(!accountsToInsert.isEmpty()){
-                insert accountsToInsert;
-            }
-
-            System.debug('*** accounts to insert: '+ accountsToInsert);
-            System.debug('*** accounts map name to account AFTER INSERT OPERATION: '+ mapAccountNameToAccount);
-
+            // Process Company Names 
+            Map<String, Account> mapAccountNameToAccount = processCompanyNames(mapJoobleIdToCompanyName);
 
             // Create Map of JoobleId : Accounts 
             Map<String, Account> mapJoobleIdToAccount = new Map<String, Account>();
@@ -92,16 +56,54 @@ public with sharing class JoobleSaveToSalesforce {
                 mapJoobleIdToJobApplication.get(joobleIdString).Company_Name__c = mapJoobleIdToAccount.get(joobleIdString).Id;
             }
 
+            // Insert Job Application records
             insert mapJoobleIdToJobApplication.values();
 
-            System.debug('*** mapJoobleIdToJobApplication AFTER INSERT OPERATION: '+ mapJoobleIdToJobApplication);
-
             } catch (Exception e) {
+
             System.debug('Error in saveToSalesforce: ' + e.getMessage());
             System.debug('Stack trace: ' + e.getStackTraceString());
             
         }
        
+    }
+
+    // Process Company Names and insert to Salesforce if needed
+    private static Map<String, Account> processCompanyNames(Map<String, String> mapJoobleIdToCompanyName){
+
+        Set<String> companyNames = new Set<String>(mapJoobleIdToCompanyName.values());  
+
+        // Get existing accounts in Salesforce that match the Company Names
+        List<Account> existingAccounts = [ 
+            SELECT Id, Name
+            FROM Account
+            WHERE Name IN :companyNames
+        ];
+
+        // Create Map of Account Name : Account
+        Map<String, Account> mapAccountNameToAccount = new Map<String, Account>();
+
+        for(Account a : existingAccounts) {
+            mapAccountNameToAccount.put(a.Name, a);
+        }
+
+        // Create Account record for Accounts that do not already exist in Salesforce
+        List<Account> accountsToInsert = new List<Account>(); 
+
+        for (String companyName : companyNames){
+            if (!mapAccountNameToAccount.containsKey(companyName)) {
+                Account newAccount = new Account(Name = companyName);
+                accountsToInsert.add(newAccount);
+                mapAccountNameToAccount.put(companyName, newAccount);
+            }
+        }
+        // Insert Account records
+        if(!accountsToInsert.isEmpty()){
+            insert accountsToInsert;
+        }
+
+        return mapAccountNameToAccount;
+
     }
 
 }
