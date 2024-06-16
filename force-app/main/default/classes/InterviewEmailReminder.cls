@@ -1,55 +1,59 @@
 public with sharing class InterviewEmailReminder implements Database.Batchable<sObject>, Database.Stateful {
-    
+  public InterviewEmailReminder() {
+  }
 
+  public Database.QueryLocator start(Database.BatchableContext BC) {
+    System.debug('**** INSIDE START');
+    return Database.getQueryLocator(
+      'SELECT Id, Subject, Owner.Email, StartDateTime, Interviewer__r.Account.Name,EndDateTime, Interviewer__r.Name FROM Event WHERE RecordType.Name = \'Interview\' AND StartDateTime = NEXT_N_DAYS:1'
+    );
+  }
 
-    public InterviewEmailReminder() {
-
-    }
-
-    public Database.QueryLocator start(Database.BatchableContext BC) {
-        System.debug('**** INSIDE START');
-        return Database.getQueryLocator('SELECT Id, Subject, Owner.Email, StartDateTime, Interviewer__r.Account.Name,EndDateTime, Interviewer__r.Name FROM Event WHERE RecordType.Name = \'Interview\' AND StartDateTime = NEXT_N_DAYS:1');
-        
-    }
-
-    public void execute(Database.BatchableContext BC, List<Event> interviews) {
-
+  public void execute(Database.BatchableContext BC, List<Event> interviews) {
     System.debug('****INSIDE EXECUTE');
-        
-        try {
 
-            List<Messaging.SingleEmailMessage> emailList = new List<Messaging.SingleEmailMessage>();
-            for ( Event interview : interviews ) {
+    try {
+      List<Messaging.SingleEmailMessage> emailList = new List<Messaging.SingleEmailMessage>();
+      for (Event interview : interviews) {
+        Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
+        mail.setToAddresses(new List<String>{ interview.Owner.Email });
+        // mail.setTemplateId('00XdM000002InU9UAK');
+        mail.setSubject(
+          'Your interview with ' + interview.Interviewer__r.Account.Name
+        );
+        mail.setPlainTextBody(
+          'You have an interview tomorrow with ' +
+            interview.Interviewer__r.Name +
+            ' starting ' +
+            interview.StartDateTime
+        );
+        emailList.add(mail);
+      }
 
-                Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
-                mail.setToAddresses(new List<String>{interview.Owner.Email});
-               // mail.setTemplateId('00XdM000002InU9UAK');
-                mail.setSubject('Your interview with ' + interview.Interviewer__r.Account.Name);
-                mail.setPlainTextBody('You have an interview tomorrow with ' + interview.Interviewer__r.Name + ' starting ' + interview.StartDateTime);
-                emailList.add(mail);
-                Messaging.sendEmail(emailList);
-                System.debug('****EMAIL SENDING' + emailList);
-            }
-            
-        } catch (Exception e) {
-            System.debug('EXCEPTION HIT:' +  e.getMessage());
-        } 
-       
+      if (!emailList.isEmpty()) {
+        Messaging.Email[] allEmails = new List<Messaging.Email>();
+        for (Integer j = 0; j < emailList.size(); j++) {
+          allEmails.add(emailList.get(j));
+        }
+        System.debug('****EMAIL SENDING' + allEmails);
 
+        Messaging.sendEmail(allEmails);
+      }
+    } catch (Exception e) {
+      System.debug('EXCEPTION HIT:' + e.getMessage());
     }
+  }
 
-    public void finish(Database.BatchableContext BC) {
-    }
+  public void finish(Database.BatchableContext BC) {
+  }
 
-    // private Id getEmailTemplateId() {
-    //      return Id interviewReminderEmailTemplateId = [SELECT Id,
-    //  FROM EmailTemplate
-    // where DeveloperName='Blank' LIMIT 1];
+  // private Id getEmailTemplateId() {
+  //      return Id interviewReminderEmailTemplateId = [SELECT Id,
+  //  FROM EmailTemplate
+  // where DeveloperName='Blank' LIMIT 1];
 
-
-    // }
+  // }
 }
-
 
 /*
 public class ComplexAccountBatch implements Database.Batchable<sObject>, Database.Stateful {
