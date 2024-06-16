@@ -4,9 +4,10 @@
     <isExposed>true</isExposed>
     <targets>
         <target>lightning__HomePage</target>
+        <target>lightning__AppPage</target>
     </targets>
     <targetConfigs>
-        <targetConfig targets="lightning__HomePage">
+        <targetConfig targets="lightning__HomePage, lightning__AppPage">
             <supportedFormFactors>
                 <supportedFormFactor type="Large"/>
             </supportedFormFactors>
