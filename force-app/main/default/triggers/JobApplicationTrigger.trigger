@@ -6,11 +6,17 @@
  * Last Modified: 
  */
 
-trigger JobApplicationTrigger on Job_Application__c (after insert, after update) {
+trigger JobApplicationTrigger on Job_Application__c (before insert, after insert, after update) {
 
     switch on Trigger.operationType {
+        
+        when BEFORE_INSERT {
+            JobApplicationTriggerHandler.setPrimaryContact(Trigger.new);
+            
+        }       
         when AFTER_INSERT {
             JobApplicationTriggerHandler.createJobApplicationTasksOnInsert(Trigger.new);
+            
         }
 
         when AFTER_UPDATE {

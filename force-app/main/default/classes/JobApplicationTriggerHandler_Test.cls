@@ -93,4 +93,44 @@ public class JobApplicationTriggerHandler_Test {
         System.assertEquals('Normal', testTask.Priority, 'Unexpected task priority for created Task');
         System.assertEquals('Not Started', testTask.Status, 'Unexpected task status for created Task');
     }
+
+    @isTest
+    static void testSetPrimaryContact() {
+        // Create test data
+        Account testAccount1 = new Account(Name = 'Test Account 1');
+        Account testAccount2 = new Account(Name = 'Test Account 2');
+        insert new List<Account> { testAccount1, testAccount2 };
+
+        Contact testContact1 = new Contact(LastName = 'Test Contact 1', AccountId = testAccount1.Id);
+        Contact testContact2 = new Contact(LastName = 'Test Contact 2', AccountId = testAccount2.Id);
+        insert new List<Contact> { testContact1, testContact2 };
+
+        Job_Application__c jobApp1 = new Job_Application__c(Company_Name__c = testAccount1.Id, Position_Title__c ='Title1');
+        Job_Application__c jobApp2 = new Job_Application__c(Company_Name__c = testAccount2.Id, Position_Title__c = 'Title2');
+
+        Job_Application__c jobApp3 = new Job_Application__c(Company_Name__c = testAccount1.Id, Position_Title__c = 'Title3'); // Should not change
+
+    
+
+        // Call the method
+        Test.startTest();
+        insert new List<Job_Application__c> { jobApp1, jobApp2, jobApp3 };
+        Test.stopTest();
+        List<Job_Application__c> newJobApplications = [SELECT Id, Company_Name__c, Primary_Contact__c FROM Job_Application__c WHERE Id IN :new List<Id>{jobApp1.Id, jobApp2.Id, jobApp3.Id}];
+        system.debug(newJobApplications);
+        // Verify the results
+        for (Job_Application__c jobApp : newJobApplications) {
+            system.debug(jobApp.Id);
+            system.debug(jobApp.Primary_Contact__c);
+            if (jobApp.Id == jobApp1.Id) {
+                System.assertEquals(testContact1.Id, jobApp.Primary_Contact__c, 'Primary Contact should be set for jobApp1');
+            } else if (jobApp.Id == jobApp2.Id) {
+                System.assertEquals(testContact2.Id, jobApp.Primary_Contact__c, 'Primary Contact should be set for jobApp2');
+            } else if (jobApp.Id == jobApp3.Id) {
+                System.assertEquals(testContact1.Id, jobApp.Primary_Contact__c, 'Primary Contact should remain unchanged for jobApp3');
+            }
+        }
+    }
 }
+
+
