@@ -9,30 +9,29 @@
 public with sharing class EventTriggerHandler {
 
     // Record Type Id for the Interview Record Type
-    final static Id interviewRecordId = Schema.SObjectType.Event.getRecordTypeInfosByName().get('Interview').getRecordTypeId();
+    final static Id INTERVIEW_RECORD_TYPE_ID = Schema.SObjectType.Event.getRecordTypeInfosByName().get('Interview').getRecordTypeId();
 
     // Main method, called in the EventTrigger
     public static void validateInterviewSchedule(List<Event> listNewEvents){
 
         List<Event> listInterviews = filterInterviews(listNewEvents);
         
-        if (listInterviews.size() > 0){
+        if (!listInterviews.isEmpty()){
             checkIfEventOnWeekend(listInterviews);
-            checkIfEventOverlapsOtherEvents(listInterviews, getAllScheduledInterviewsInTimeframe(listInterviews));
+            List<Event> overlappingInterviews = getAllScheduledInterviewsInTimeframe(listInterviews);
+            checkIfEventOverlapsOtherEvents(listInterviews, overlappingInterviews);
         
         }
 
     }
 
-    // Helper method, filters list of events for events of record type 'Interview'
+    // Filters list of events for events of record type 'Interview'
     private static List<Event> filterInterviews(List<Event> listNewEvents){
 
         List<Event> listInterviews = new List<Event>();
 
-        System.debug('interviewRecordId: ' + interviewRecordId);
-
         for(Event event : listNewEvents){
-            if(event.RecordTypeId == interviewRecordId){
+            if(event.RecordTypeId == INTERVIEW_RECORD_TYPE_ID){
                 listInterviews.add(event);
             }
         }
@@ -56,7 +55,6 @@ public with sharing class EventTriggerHandler {
     // Gets all existing Interview records overlapping the StartDateTime to EndDateTime window of a list of Events
     private static List<Event> getAllScheduledInterviewsInTimeframe(List<Event> eventList){
 
-        List<Long> eventStartAndEndTimes = new List<Long>();
         List<Datetime> eventDateTimes = new List<Datetime>();
 
         for(Event e : eventList){
@@ -76,38 +74,22 @@ public with sharing class EventTriggerHandler {
             SELECT Id, StartDateTime, EndDateTime, RecordTypeId, OwnerId
             FROM Event 
             WHERE (StartDateTime < :latestEndTime AND EndDateTime > :earliestStartTime)
-            AND RecordTypeId = :interviewRecordId
+            AND RecordTypeId = :INTERVIEW_RECORD_TYPE_ID
         ];
 
     }
 
-    // Checks if a list of events overlap with existing events; if overlap occurs, an error is displayed
-
-    // @TODO: CHECK IF OWNER ID MATCHES SAME OWNER ELSE OK.
+    // Checks if a list of events overlaps with existing events for the same owner; if overlap occurs, an error is displayed
     private static void checkIfEventOverlapsOtherEvents(List<Event> listNewEvents, List<Event> listExistingEvents){
 
-        List<Long> eventStartAndEndTimes = new List<Long>();
-        
-        for(Event e : listNewEvents){
-            eventStartAndEndTimes.add(e.StartDateTime.getTime());
-            eventStartAndEndTimes.add(e.EndDateTime.getTime());
-        }
+        for(Event newEvent : listNewEvents){
 
-        for(Event e : listExistingEvents){
-            eventStartAndEndTimes.add(e.StartDateTime.getTime());
-            eventStartAndEndTimes.add(e.EndDateTime.getTime());
-        }
-
-        eventStartAndEndTimes.sort();
-
-        for(Event e : listNewEvents){
-            Integer index = eventStartAndEndTimes.indexOf(e.StartDateTime.getTime());
-            if(index != eventStartAndEndTimes.size()-1){
-                if(eventStartAndEndTimes[index+1] != e.EndDateTime.getTime()){
-                    e.addError('Interview overlaps with another interview!');
+            for(Event existingEvent : listExistingEvents){
+                if(newEvent.StartDateTime < existingEvent.EndDateTime && newEvent.EndDateTime > existingEvent.StartDateTime && 
+                    newEvent.OwnerId == existingEvent.OwnerId){
+                    newEvent.addError('Interview overlaps with another interview!');
                 }
             }
-
         }
         
     }
