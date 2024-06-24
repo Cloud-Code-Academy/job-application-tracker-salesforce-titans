@@ -1,0 +1,44 @@
+<template>
+  <lightning-card title="Income & Filing Status Details">
+    <!--
+    <p class="slds-p-horizontal_small">Card Body (custom component)</p>
+    -->
+
+    <lightning-input
+      type="number"
+      name="salaryInput"
+      label="Salary"
+      value={salaryValue}
+      onchange={handleSalaryInputChange}
+      required
+    ></lightning-input>
+    <lightning-combobox
+      name="filingStatusSelect"
+      label="Filing Status"
+      value={filingStatusSelect}
+      placeholder="Select Filing Status"
+      options={filingStatusOptions}
+      onchange={handleFilingStatusChange}
+      required
+    ></lightning-combobox>
+    <!--<p>Selected value is: {value}</p> -->
+    <!-- Success variant: Identifies a successful action -->
+    <div class="slds-m-top_small"></div>
+    <lightning-button
+      variant="success"
+      label="Calculate Take Home Pay"
+      title="Successful action"
+      onclick={calculateTakeHomeSalary}
+    ></lightning-button>
+    <template lwc:if={takeHomeSalary}>
+      <div class="slds-m-top_small">
+        <p class="slds-align_absolute-center">
+          Based on a salary of ${salaryInput} and a filing status of
+          {filingStatusSelect}, your take home estimate is:
+        </p>
+        <p class="centered-bold-text">${takeHomeSalary}</p>
+      </div>
+    </template>
+    <p slot="footer">Take Home Pay Estimation</p>
+  </lightning-card>
+</template>
