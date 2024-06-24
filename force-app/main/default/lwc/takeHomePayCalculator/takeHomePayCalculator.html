@@ -38,6 +38,45 @@
         </p>
         <p class="centered-bold-text">${takeHomeSalary}</p>
       </div>
+      <div class="demo-only demo-only--sizing slds-grid slds-wrap">
+        <div class="slds-size_1-of-3">
+          <div
+            class="slds-box slds-box_x-small slds-text-align_center slds-m-around_x-small"
+          >
+            BiWeekly: ${biweeklyTakeHome}
+          </div>
+        </div>
+        <div class="slds-size_1-of-3">
+          <div
+            class="slds-box slds-box_x-small slds-text-align_center slds-m-around_x-small"
+          >
+            Monthly: ${monthlyTakeHome}
+          </div>
+        </div>
+        <div class="slds-size_1-of-3">
+          <div
+            class="slds-box slds-box_x-small slds-text-align_center slds-m-around_x-small"
+          >
+            Six Months: ${sixMonthsTakeHome}
+          </div>
+        </div>
+      </div>
+      <div class="demo-only demo-only--sizing slds-grid slds-wrap">
+        <div class="slds-size_2-of-3">
+          <div class="slds-text-align_left slds-m-around_x-small">
+            <p>Federal Income tax:</p>
+            <p>Social Security Withholding:</p>
+            <p>Medicare Withholding:</p>
+          </div>
+        </div>
+        <div class="slds-size_1-of-3">
+          <div class="slds-text-align_left slds-m-around_x-small">
+            <p>${federalTax}</p>
+            <p>${socialSecurityDeduction}</p>
+            <p>${medicareDeduction}</p>
+          </div>
+        </div>
+      </div>
     </template>
     <p slot="footer">Take Home Pay Estimation</p>
   </lightning-card>

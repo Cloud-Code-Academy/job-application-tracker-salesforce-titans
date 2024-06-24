@@ -16,12 +16,12 @@ export default class takeHomePayCalculator extends LightningElement {
   salaryInput = 0;
 
   federalTax = 0;
-  socialSecurityTax = 6.2;
-  medicareWithholding = 1.45;
   takeHomeSalary = 0;
   biweeklyTakeHome = 0;
   monthlyTakeHome = 0;
-  biyearlyTakeHome = 0;
+  sixMonthsTakeHome = 0;
+  socialSecurityDeduction = 0;
+  medicareDeduction = 0;
 
   /* Expose schema objects/fields to the template. */
   jobApplicationName = Job_Application_OBJECT;
@@ -84,8 +84,6 @@ export default class takeHomePayCalculator extends LightningElement {
 
     const socialSecurityRate = 0.062;
     const medicareRate = 0.0145;
-    const socialSecurityDeduction = this.salaryInput * socialSecurityRate;
-    const medicareDeduction = this.salaryInput * medicareRate;
 
     //Calculate Standard deduction
     const standardDeduction = {
@@ -160,14 +158,33 @@ export default class takeHomePayCalculator extends LightningElement {
         remainingIncome = bracket.threshold;
       }
     }
+    this.federalTax = tax;
+
+    this.socialSecurityDeduction = this.salaryInput * socialSecurityRate;
+    this.medicareDeduction = this.salaryInput * medicareRate;
 
     // Calculate take home salary after tax
     const takeHomeSalary =
-      this.salaryInput - tax - socialSecurityDeduction - medicareDeduction;
+      this.salaryInput -
+      this.federalTax -
+      this.socialSecurityDeduction -
+      this.medicareDeduction;
 
     // Update takeHomeSalary property
     this.takeHomeSalary = takeHomeSalary;
 
     console.log("*** TAKE HOME" + this.takeHomeSalary);
+
+    this.calculateTakeHomeSalaryBiWeeklyMonthlySixMonths();
+  }
+
+  calculateTakeHomeSalaryBiWeeklyMonthlySixMonths() {
+    const calculateBiweeklyTakeHome = this.takeHomeSalary / 26.07;
+    const calculateMonthlyTakeHome = this.takeHomeSalary / 12;
+    const calculateSixMonthsTakeHome = this.takeHomeSalary / 2;
+
+    this.biweeklyTakeHome = calculateBiweeklyTakeHome.toFixed(2);
+    this.monthlyTakeHome = calculateMonthlyTakeHome.toFixed(2);
+    this.sixMonthsTakeHome = calculateSixMonthsTakeHome.toFixed(2);
   }
 }
