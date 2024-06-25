@@ -1,13 +1,18 @@
 <template>
 
-    <lightning-card title="Search for Jobs">
+    <lightning-card title="Search Results">
         <div class="slds-m-around_medium">
-            <lightning-input label="Keywords" onchange={handleKeyChange}></lightning-input>
+            <!-- <lightning-input label="Keywords" onchange={handleKeyChange}></lightning-input>
             <lightning-input label="Location" onchange={handleLocChange}></lightning-input>
-            <div class="slds-m-top_medium">
-                <lightning-button label="Search for Jobs" onclick={handleSearch} variant="brand"></lightning-button>
-            </div>
-            <!-- <template lwc:if={data.length}>
+            <br/>
+            <lightning-button label="Search for Jobs" onclick={handleSearch}></lightning-button>
+            <br/> -->
+            <template lwc:if={noSubscription}>
+                <div class="slds-m-top_medium">
+                    <p>Please enter a query in the left sidebar to get started.</p>
+                </div>
+            </template>
+            <template lwc:if={data.length}>
                 <div  class="slds-m-top_medium">
                     <lightning-datatable 
                         key-field="id"
@@ -17,14 +22,14 @@
                     </lightning-datatable>
                 </div>
                 <div class="slds-m-top_medium">
-                    <lightning-button label="Save to Salesforce" onclick={handleSave}></lightning-button>
+                    <lightning-button label="Save to Salesforce" onclick={handleSave} variant="brand"></lightning-button>
                 </div>
             </template>
             <template lwc:if={noResults}>
                 <div class="slds-m-top_medium">
                     <p>No results found. Please try a new search.</p>
                 </div>
-            </template> -->
+            </template>
         </div>
     </lightning-card>
 
