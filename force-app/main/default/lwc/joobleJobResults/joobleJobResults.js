@@ -8,9 +8,7 @@ const columns = [
     { label: 'Title', fieldName: 'title' },
     { label: 'Location', fieldName: 'location' },
     { label: 'Description', fieldName: 'snippet', wrapText: true },
-    // { label: 'Salary', fieldName: 'salary', type: 'currency' },
     { label: 'Company', fieldName: 'company' },
-    // { label: 'URL', fieldName: 'link' }
 ];
 
 export default class JoobleJobResults extends LightningElement {
