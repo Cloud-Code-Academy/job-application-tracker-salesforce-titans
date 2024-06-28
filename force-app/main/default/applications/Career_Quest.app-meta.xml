@@ -48,9 +48,13 @@
     <tabs>standard-Event</tabs>
     <tabs>standard-Contact</tabs>
     <tabs>standard-Account</tabs>
+    <tabs>ErrorLog__c</tabs>
     <uiType>Lightning</uiType>
     <utilityBar>Career_Quest_UtilityBar</utilityBar>
     <workspaceConfig>
+        <mappings>
+            <tab>ErrorLog__c</tab>
+        </mappings>
         <mappings>
             <tab>Job_Application__c</tab>
         </mappings>
