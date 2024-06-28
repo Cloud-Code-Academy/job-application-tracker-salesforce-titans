@@ -3,7 +3,7 @@
  * Description: This class handles the creation of Task records based on the Status__c of the Job_Application__c record. 
  * Created to be used in conjunction with the JobApplicationTrigger.
  * Created Date: 2024-06-06
- * Last Modified: 2024-06-09
+ * Last Modified: 2024-06-27
  */
 
 public with sharing class JobApplicationTriggerHandler {
@@ -90,5 +90,35 @@ public with sharing class JobApplicationTriggerHandler {
 
         return taskList;
     }
-
-}
+    public static void setPrimaryContact(List<Job_Application__c> newJobApplications) { 
+            Set<Id> accountIds = new Set<Id>();
+            Map<Id, Id> accountToContactMap = new Map<Id, Id>();
+        
+            // Collect Account Ids from new job applications
+            for (Job_Application__c jobApp : newJobApplications) {
+                if (jobApp.Company_Name__c != null && jobApp.Primary_Contact__c == null) {
+                    accountIds.add(jobApp.Company_Name__c);
+                }
+            }
+        
+            // Query related contacts in bulk
+            if (!accountIds.isEmpty()) {
+                List<Contact> relatedContacts = [
+                    SELECT Id, AccountId
+                    FROM Contact
+                    WHERE AccountId IN :accountIds
+                ];
+        
+                for (Contact contact : relatedContacts) {
+                    accountToContactMap.put(contact.AccountId, contact.Id);
+                }
+            }
+        
+            // Update the primary contact for job applications
+            for (Job_Application__c jobApp : newJobApplications) {
+                if (jobApp.Primary_Contact__c == null && accountToContactMap.containsKey(jobApp.Company_Name__c)) {
+                    jobApp.Primary_Contact__c = accountToContactMap.get(jobApp.Company_Name__c);
+                }
+            }
+        }
+    }
