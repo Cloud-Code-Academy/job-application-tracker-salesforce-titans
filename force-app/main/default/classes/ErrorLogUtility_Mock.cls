@@ -1,3 +1,11 @@
+/**
+ * Apex Class: ErrorLogUtility_Mock
+ * Description: This class creates mock exceptions used for testing the ErrorLogUtility class
+ * Created Date: 2024-06-27
+ * Last Modified: 2024-07-01
+ */
+
+
 @isTest
 public class ErrorLogUtility_Mock {
  

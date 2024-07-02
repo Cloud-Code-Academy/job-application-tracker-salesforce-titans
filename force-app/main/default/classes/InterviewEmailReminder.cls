@@ -5,61 +5,59 @@
  * Created Date: 2024-06-14
  * Last Modified: 2024-06-16
  */
+
 public with sharing class InterviewEmailReminder implements Database.Batchable<sObject>, Database.Stateful {
+    
   @TestVisible
-  static Integer emailLimits;
+    static Integer emailLimits;
 
-  public InterviewEmailReminder() {
-  }
-  // Start method
-  public Database.QueryLocator start(Database.BatchableContext BC) {
-    System.debug('**** INSIDE START');
-    return Database.getQueryLocator(
-      'SELECT Id, Subject, Owner.Email, StartDateTime, Interviewer__r.Account.Name,EndDateTime, Interviewer__r.Name FROM Event WHERE RecordType.Name = \'Interview\' AND StartDateTime = NEXT_N_DAYS:1'
-    );
-  }
-  //Execute Method
-  public void execute(Database.BatchableContext BC, List<Event> interviews) {
-    System.debug('****INSIDE EXECUTE');
-
-    try {
-      List<Messaging.SingleEmailMessage> emailList = new List<Messaging.SingleEmailMessage>();
-      for (Event interview : interviews) {
-        Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
-        mail.setToAddresses(new List<String>{ interview.Owner.Email });
-        // mail.setTemplateId('00XdM000002InU9UAK');
-        mail.setSubject(
-          'Your interview with ' + interview.Interviewer__r.Account.Name
-        );
-        mail.setPlainTextBody(
-          'You have an interview tomorrow with ' +
-            interview.Interviewer__r.Name +
-            ' starting ' +
-            interview.StartDateTime
-        );
-        emailList.add(mail);
-      }
-
-      if (!emailList.isEmpty()) {
-        Messaging.Email[] allEmails = new List<Messaging.Email>();
-        for (Integer j = 0; j < emailList.size(); j++) {
-          allEmails.add(emailList.get(j));
-        }
-        System.debug('****EMAIL SENDING' + allEmails);
-
-        Messaging.sendEmail(allEmails);
-
-        // This is used in line 70 of test class to assert
-        InterviewEmailReminder.emailLimits = Limits.getEmailInvocations();
-
-        System.debug('**** POST SEND EMAIL ' + Limits.getEmailInvocations());
-      }
-    } catch (Exception e) {
-      System.debug('EXCEPTION HIT:' + e.getMessage());
+    // Start method
+    public Database.QueryLocator start(Database.BatchableContext BC) {
+      return Database.getQueryLocator(
+        'SELECT Id, Subject, Owner.Email, StartDateTime, Interviewer__r.Account.Name,EndDateTime, Interviewer__r.Name FROM Event WHERE RecordType.Name = \'Interview\' AND StartDateTime = NEXT_N_DAYS:1'
+      );
     }
-  }
 
-  //finish
-  public void finish(Database.BatchableContext BC) {
-  }
+    //Execute Method
+    public void execute(Database.BatchableContext BC, List<Event> interviews) {
+
+      try {
+        List<Messaging.SingleEmailMessage> emailList = new List<Messaging.SingleEmailMessage>();
+        for (Event interview : interviews) {
+          Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
+          mail.setToAddresses(new List<String>{ interview.Owner.Email });
+          // mail.setTemplateId('00XdM000002InU9UAK');
+          mail.setSubject(
+            'Your interview with ' + interview.Interviewer__r.Account.Name
+          );
+          mail.setPlainTextBody(
+            'You have an interview tomorrow with ' +
+              interview.Interviewer__r.Name +
+              ' starting ' +
+              interview.StartDateTime
+          );
+          emailList.add(mail);
+        }
+
+        if (!emailList.isEmpty()) {
+          Messaging.Email[] allEmails = new List<Messaging.Email>();
+          for (Integer j = 0; j < emailList.size(); j++) {
+            allEmails.add(emailList.get(j));
+          }
+      
+          Messaging.sendEmail(allEmails);
+
+          // Sets the emailLimits class variable for reference in the ScheduleDailyInterviewReminderTest class
+          InterviewEmailReminder.emailLimits = Limits.getEmailInvocations();
+
+        }
+      } catch (Exception e) {
+        ErrorLogUtility.logError(e);
+      }
+
+    }
+
+    //finish
+    public void finish(Database.BatchableContext BC) {
+    }
 }
