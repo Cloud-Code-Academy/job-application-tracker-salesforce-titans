@@ -1,3 +1,11 @@
+/**
+ * Apex Class: EventTriggerHandler_Test
+ * Description: This class tests the EventTriggerHandler class, evaluating that a validation occurs if an
+ * Event - Interview record type - is scheduled on a weekend or overlaps another Interview Event.
+ * Created Date: 2024-06-19
+ * Last Modified: 2024-07-01
+ */
+
 @isTest
 public with sharing class EventTriggerHandler_Test {
         

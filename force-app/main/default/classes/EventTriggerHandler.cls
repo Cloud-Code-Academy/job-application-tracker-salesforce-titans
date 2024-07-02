@@ -3,7 +3,7 @@
  * Description: This class is designed to handle the logic for the EventTrigger, preventing Events of Record Type = 'Interview'
  * from being scheduled on the weekend or overlapping at the same time
  * Created Date: 2024-06-17
- * Last Modified: 
+ * Last Modified: 2024-07-01
  */
 
 public with sharing class EventTriggerHandler {
@@ -30,10 +30,16 @@ public with sharing class EventTriggerHandler {
 
         List<Event> listInterviews = new List<Event>();
 
-        for(Event event : listNewEvents){
-            if(event.RecordTypeId == INTERVIEW_RECORD_TYPE_ID){
-                listInterviews.add(event);
+        try {
+
+            for(Event event : listNewEvents){
+                if(event.RecordTypeId == INTERVIEW_RECORD_TYPE_ID){
+                    listInterviews.add(event);
+                }
             }
+
+        } catch(Exception e){
+            ErrorLogUtility.logError(e);
         }
 
         return listInterviews;
@@ -42,54 +48,78 @@ public with sharing class EventTriggerHandler {
     // Checks if event is on weekend and displays an error
     private static void checkIfEventOnWeekend(List<Event> eventList){
 
-        for(Event event : eventList){
+        try{
 
-            String weekdayOfEvent = event.StartDateTime.format('E');
-        
-            if(weekdayOfEvent == 'Sat' || weekdayOfEvent == 'Sun'){
-                event.addError('Cannot create an interview on a weekend!');
+            for(Event event : eventList){
+
+                String weekdayOfEvent = event.StartDateTime.format('E');
+            
+                if(weekdayOfEvent == 'Sat' || weekdayOfEvent == 'Sun'){
+                    event.addError('Cannot create an interview on a weekend!');
+                }
             }
+
+        } catch(Exception e){
+            ErrorLogUtility.logError(e);
         }
+        
     }
 
     // Gets all existing Interview records overlapping the StartDateTime to EndDateTime window of a list of Events
     private static List<Event> getAllScheduledInterviewsInTimeframe(List<Event> eventList){
 
-        List<Datetime> eventDateTimes = new List<Datetime>();
+        List<Event> allOverlappingInterviews = new List<Event>();
 
-        for(Event e : eventList){
-            eventDateTimes.add(e.StartDateTime);
-            eventDateTimes.add(e.EndDateTime);
+        try {
+
+            List<Datetime> eventDateTimes = new List<Datetime>();
+
+            for(Event e : eventList){
+                eventDateTimes.add(e.StartDateTime);
+                eventDateTimes.add(e.EndDateTime);
+            }
+
+            // SORT DATETIMES OLDEST TO NEWEST
+            eventDateTimes.sort();
+
+            Datetime earliestStartTime = eventDateTimes[0];
+            Datetime latestEndTime = eventDateTimes[eventDateTimes.size()-1];
+            
+
+            // Return all Interview Events where the StartDateTime is BEFORE the latest EndDateTime of the latest ending Event
+            // and the EndDateTime is AFTER the earliest StartDateTime of the earliest starting Event
+            allOverlappingInterviews = [
+                SELECT Id, StartDateTime, EndDateTime, RecordTypeId, OwnerId
+                FROM Event 
+                WHERE (StartDateTime < :latestEndTime AND EndDateTime > :earliestStartTime)
+                AND RecordTypeId = :INTERVIEW_RECORD_TYPE_ID
+            ];
+
+        } catch(Exception e){
+            ErrorLogUtility.logError(e);
         }
-
-        // SORT DATETIMES OLDEST TO NEWEST
-        eventDateTimes.sort();
-
-        Datetime earliestStartTime = eventDateTimes[0];
-        Datetime latestEndTime = eventDateTimes[eventDateTimes.size()-1];
         
-        // Return all Interview Events where the StartDateTime is BEFORE the latest EndDateTime of the latest ending Event
-        // and the EndDateTime is AFTER the earliest StartDateTime of the earliest starting Event
-        return [
-            SELECT Id, StartDateTime, EndDateTime, RecordTypeId, OwnerId
-            FROM Event 
-            WHERE (StartDateTime < :latestEndTime AND EndDateTime > :earliestStartTime)
-            AND RecordTypeId = :INTERVIEW_RECORD_TYPE_ID
-        ];
+        return allOverlappingInterviews;
 
     }
 
     // Checks if a list of events overlaps with existing events for the same owner; if overlap occurs, an error is displayed
     private static void checkIfEventOverlapsOtherEvents(List<Event> listNewEvents, List<Event> listExistingEvents){
 
-        for(Event newEvent : listNewEvents){
+        try {
 
-            for(Event existingEvent : listExistingEvents){
-                if(newEvent.StartDateTime < existingEvent.EndDateTime && newEvent.EndDateTime > existingEvent.StartDateTime && 
-                    newEvent.OwnerId == existingEvent.OwnerId){
-                    newEvent.addError('Interview overlaps with another interview!');
+            for(Event newEvent : listNewEvents){
+
+                for(Event existingEvent : listExistingEvents){
+                    if(newEvent.StartDateTime < existingEvent.EndDateTime && newEvent.EndDateTime > existingEvent.StartDateTime && 
+                        newEvent.OwnerId == existingEvent.OwnerId){
+                        newEvent.addError('Interview overlaps with another interview!');
+                    }
                 }
             }
+
+        } catch(Exception e){
+            ErrorLogUtility.logError(e);
         }
         
     }

@@ -2,9 +2,10 @@
  * Apex Class: JoobleAPIService_MockGenerator
  * Description: This class is used to test the JoobleAPIService class, creating mock data for testing.
  * Created Date: 2024-06-16
- * Last Modified: 
+ * Last Modified: 2024-07-01
  */
 
+@isTest
 public with sharing class JoobleAPIService_MockGenerator implements HttpCalloutMock {
 
     // Creates a mock HTTP response for POST request

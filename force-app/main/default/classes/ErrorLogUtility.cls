@@ -1,3 +1,10 @@
+/**
+ * Apex Class: ErrorLogUtility
+ * Description: This class handles any exceptions, creating an ErrorLog__c record that is saved to Salesforce
+ * Created Date: 2024-06-25
+ * Last Modified: 2024-07-01
+ */
+
 public with sharing class ErrorLogUtility {
     
     

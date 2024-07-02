@@ -8,7 +8,6 @@
 public with sharing class InterviewEmailReminderTest {
   @TestSetup
   static void makeData() {
-    System.debug('********** 1: Start');
 
     //Query profile outside of loop
     Profile stdUsrProfile = [
@@ -62,17 +61,15 @@ public with sharing class InterviewEmailReminderTest {
     InterviewEmailReminder testInterviewEmailReminder = new InterviewEmailReminder();
     // start the batch Job
     Id batchId = Database.executeBatch(testInterviewEmailReminder);
-    System.debug('**** EMAIL INVOCATIONS: ' + Limits.getEmailInvocations());
+
     test.stopTest();
 
     //Assertions
 
     // Assert the number of emails sent of the static test varible set in InterviewReminder class after sending email.
     Integer emailCount = InterviewEmailReminder.emailLimits;
-    System.debug('**** EMAIL INVOCATIONS: ' + emailCount);
 
     // // Assert the number of emails sent matches the number of interviews tomorrow
-
     System.assertEquals(
       1,
       emailCount,

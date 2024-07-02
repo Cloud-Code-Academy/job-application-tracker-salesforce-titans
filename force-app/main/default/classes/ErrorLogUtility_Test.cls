@@ -1,3 +1,10 @@
+/**
+ * Apex Class: ErrorLogUtility_Test
+ * Description: This class tests ErrorLogUtility class, referencing the ErrorLogUtility_Mock class
+ * Created Date: 2024-06-27
+ * Last Modified: 2024-07-01
+ */
+
 @isTest
 public with sharing class ErrorLogUtility_Test {
     
@@ -22,7 +29,7 @@ public with sharing class ErrorLogUtility_Test {
             'Expected test error log message to be /"Divide by 0/"'
         );
         System.assert(
-            testErrorLog[0].StackTrace__c.contains('Class.ErrorLogUtility_Mock.catchException: line 9, column 1'),
+            testErrorLog[0].StackTrace__c.contains('Class.ErrorLogUtility_Mock.catchException: line 17, column 1'),
             'Expected different test error log stack trace'
         );
         System.assertEquals(
@@ -41,7 +48,7 @@ public with sharing class ErrorLogUtility_Test {
             'Expected /"System.MathException/" for error type name'
         );
         System.assertEquals(
-            9,
+            17,
             testErrorLog[0].LineNumber__c,
             'Expected a different line number on test error log'
         );

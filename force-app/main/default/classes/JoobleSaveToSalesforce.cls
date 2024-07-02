@@ -59,11 +59,9 @@ public with sharing class JoobleSaveToSalesforce {
             // Insert Job Application records
             insert mapJoobleIdToJobApplication.values();
 
-            } catch (Exception e) {
+        } catch (Exception e) {
+           ErrorLogUtility.logError(e);
 
-            System.debug('Error in saveToSalesforce: ' + e.getMessage());
-            System.debug('Stack trace: ' + e.getStackTraceString());
-            
         }
        
     }
@@ -71,35 +69,42 @@ public with sharing class JoobleSaveToSalesforce {
     // Process Company Names and insert to Salesforce if needed
     private static Map<String, Account> processCompanyNames(Map<String, String> mapJoobleIdToCompanyName){
 
-        Set<String> companyNames = new Set<String>(mapJoobleIdToCompanyName.values());  
-
-        // Get existing accounts in Salesforce that match the Company Names
-        List<Account> existingAccounts = [ 
-            SELECT Id, Name
-            FROM Account
-            WHERE Name IN :companyNames
-        ];
 
         // Create Map of Account Name : Account
         Map<String, Account> mapAccountNameToAccount = new Map<String, Account>();
 
-        for(Account a : existingAccounts) {
-            mapAccountNameToAccount.put(a.Name, a);
-        }
+        try{
+    
+            Set<String> companyNames = new Set<String>(mapJoobleIdToCompanyName.values());  
 
-        // Create Account record for Accounts that do not already exist in Salesforce
-        List<Account> accountsToInsert = new List<Account>(); 
+            // Get existing accounts in Salesforce that match the Company Names
+            List<Account> existingAccounts = [ 
+                SELECT Id, Name
+                FROM Account
+                WHERE Name IN :companyNames
+            ];
 
-        for (String companyName : companyNames){
-            if (!mapAccountNameToAccount.containsKey(companyName)) {
-                Account newAccount = new Account(Name = companyName);
-                accountsToInsert.add(newAccount);
-                mapAccountNameToAccount.put(companyName, newAccount);
+            // Add accounts to map
+            for(Account a : existingAccounts) {
+                mapAccountNameToAccount.put(a.Name, a);
             }
-        }
-        // Insert Account records
-        if(!accountsToInsert.isEmpty()){
-            insert accountsToInsert;
+
+            // Create Account record for Accounts that do not already exist in Salesforce
+            List<Account> accountsToInsert = new List<Account>(); 
+
+            for (String companyName : companyNames){
+                if (!mapAccountNameToAccount.containsKey(companyName)) {
+                    Account newAccount = new Account(Name = companyName);
+                    accountsToInsert.add(newAccount);
+                    mapAccountNameToAccount.put(companyName, newAccount);
+                }
+            }
+            // Insert Account records
+            if(!accountsToInsert.isEmpty()){
+                insert accountsToInsert;
+            }
+        } catch(Exception e){
+            ErrorLogUtility.logError(e);
         }
 
         return mapAccountNameToAccount;
