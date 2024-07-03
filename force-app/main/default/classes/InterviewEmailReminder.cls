@@ -7,57 +7,70 @@
  */
 
 public with sharing class InterviewEmailReminder implements Database.Batchable<sObject>, Database.Stateful {
-    
   @TestVisible
-    static Integer emailLimits;
+  static Integer emailLimits;
 
-    // Start method
-    public Database.QueryLocator start(Database.BatchableContext BC) {
-      return Database.getQueryLocator(
-        'SELECT Id, Subject, Owner.Email, StartDateTime, Interviewer__r.Account.Name,EndDateTime, Interviewer__r.Name FROM Event WHERE RecordType.Name = \'Interview\' AND StartDateTime = NEXT_N_DAYS:1'
-      );
-    }
+  // Start method
+  public Database.QueryLocator start(Database.BatchableContext BC) {
+    return Database.getQueryLocator(
+      'SELECT Id, Subject, Owner.Email, StartDateTime, Interviewer__r.Account.Name,EndDateTime, Interviewer__r.Name FROM Event WHERE RecordType.Name = \'Interview\' AND StartDateTime = NEXT_N_DAYS:1'
+    );
+  }
 
-    //Execute Method
-    public void execute(Database.BatchableContext BC, List<Event> interviews) {
+  //Execute Method
+  public void execute(Database.BatchableContext BC, List<Event> interviews) {
+    try {
+      List<Messaging.SingleEmailMessage> emailList = new List<Messaging.SingleEmailMessage>();
+      for (Event interview : interviews) {
+        Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
+        mail.setSaveAsActivity(false);
+        mail.setTargetObjectId(interview.OwnerId);
 
-      try {
-        List<Messaging.SingleEmailMessage> emailList = new List<Messaging.SingleEmailMessage>();
-        for (Event interview : interviews) {
-          Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
-          mail.setToAddresses(new List<String>{ interview.Owner.Email });
-          // mail.setTemplateId('00XdM000002InU9UAK');
-          mail.setSubject(
-            'Your interview with ' + interview.Interviewer__r.Account.Name
-          );
-          mail.setPlainTextBody(
-            'You have an interview tomorrow with ' +
-              interview.Interviewer__r.Name +
-              ' starting ' +
-              interview.StartDateTime
-          );
-          emailList.add(mail);
-        }
+        mail.setToAddresses(new List<String>{ interview.Owner.Email });
 
-        if (!emailList.isEmpty()) {
-          Messaging.Email[] allEmails = new List<Messaging.Email>();
-          for (Integer j = 0; j < emailList.size(); j++) {
-            allEmails.add(emailList.get(j));
-          }
-      
-          Messaging.sendEmail(allEmails);
+        // mail.setTemplateId('00XdM000002InU9UAK');
+        // mail.setSubject(
+        //   'Your interview with ' + interview.Interviewer__r.Account.Name
+        // );
+        // mail.setPlainTextBody(
+        //   'You have an interview tomorrow with ' +
+        //     interview.Interviewer__r.Name +
+        //     ' starting ' +
+        //     interview.StartDateTime
+        // );
+        //Query email template id
+        EmailTemplate emailTemplate = [
+          SELECT Id, Subject, Description, HtmlValue, DeveloperName, Body
+          FROM EmailTemplate
+          WHERE name = 'Interview Reminder'
+        ];
+        //Set Template Id
+        mail.setTemplateID(emailTemplate.Id);
+        //This is important for the merge
+        mail.setWhatId(interview.Id);
 
-          // Sets the emailLimits class variable for reference in the ScheduleDailyInterviewReminderTest class
-          InterviewEmailReminder.emailLimits = Limits.getEmailInvocations();
+        // mail.setPlainTextBody(emailTemplate.Body);
 
-        }
-      } catch (Exception e) {
-        ErrorLogUtility.logError(e);
+        emailList.add(mail);
       }
 
-    }
+      if (!emailList.isEmpty()) {
+        Messaging.Email[] allEmails = new List<Messaging.Email>();
+        for (Integer j = 0; j < emailList.size(); j++) {
+          allEmails.add(emailList.get(j));
+        }
 
-    //finish
-    public void finish(Database.BatchableContext BC) {
+        Messaging.sendEmail(allEmails);
+
+        // Sets the emailLimits class variable for reference in the ScheduleDailyInterviewReminderTest class
+        InterviewEmailReminder.emailLimits = Limits.getEmailInvocations();
+      }
+    } catch (Exception e) {
+      // ErrorLogUtility.logError(e);
     }
+  }
+
+  //finish
+  public void finish(Database.BatchableContext BC) {
+  }
 }
