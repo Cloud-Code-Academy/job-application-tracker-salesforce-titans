@@ -82,6 +82,16 @@
     <flexiPageRegions>
         <itemInstances>
             <componentInstance>
+                <componentName>takeHomePayCalculator</componentName>
+                <identifier>c_takeHomePayCalculator</identifier>
+            </componentInstance>
+        </itemInstances>
+        <name>Facet-cd719f7b-6edc-431c-b5f6-e7675e8e8bd1</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+    <flexiPageRegions>
+        <itemInstances>
+            <componentInstance>
                 <componentInstanceProperties>
                     <name>body</name>
                     <value>relatedTabContent</value>
@@ -110,6 +120,20 @@
                 </componentInstanceProperties>
                 <componentName>flexipage:tab</componentName>
                 <identifier>detailTab</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>body</name>
+                    <value>Facet-cd719f7b-6edc-431c-b5f6-e7675e8e8bd1</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>title</name>
+                    <value>Salary Calculator</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:tab</componentName>
+                <identifier>flexipage_tab</identifier>
             </componentInstance>
         </itemInstances>
         <mode>Replace</mode>
