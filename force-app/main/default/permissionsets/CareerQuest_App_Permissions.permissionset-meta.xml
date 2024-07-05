@@ -200,4 +200,12 @@
         <tab>Job_Application__c</tab>
         <visibility>Visible</visibility>
     </tabSettings>
+    <tabSettings>
+        <tab>Job_Search</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>jobSearchHeader_tab</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
 </PermissionSet>
