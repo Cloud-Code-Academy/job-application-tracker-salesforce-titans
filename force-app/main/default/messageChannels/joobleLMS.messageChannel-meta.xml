@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningMessageChannel xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>a LMS to handle data communication between the Jooble Job Search and Jooble Search Results lightning web components</description>
+    <isExposed>true</isExposed>
+    <masterLabel>joobleLMS</masterLabel>
+</LightningMessageChannel>

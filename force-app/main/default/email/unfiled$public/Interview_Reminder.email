@@ -1,0 +1,14 @@
+<messaging:emailTemplate subject="Your Interview with Is Scheduled Tomorrow" recipientType="User" relatedToType="Event">
+<messaging:plainTextEmailBody >
+Congratulations!
+You have an Interview scheduled tomorrow following are the details.
+             
+              Contact: {!RelatedTo.Account.CreatedBy.Name} ;
+              Assigned To : {!RelatedTo.Owner.Name};
+              Job Application :{!RelatedTo.What.Name};
+              Location :{!RelatedTo.Location}
+              Start Time :{!RelatedTo.StartDateTime}
+              Email: {!RelatedTo.Account.CreatedBy.Email} &nbsp;
+
+</messaging:plainTextEmailBody>
+</messaging:emailTemplate>
